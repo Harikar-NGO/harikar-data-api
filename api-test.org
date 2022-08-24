@@ -1,0 +1,94 @@
+* testing my api routes
+
+** index route
+
+#+BEGIN_SRC restclient
+GET http://localhost:3000
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC html
+This is the index page!
+<!-- GET http://localhost:3000 -->
+<!-- HTTP/1.1 200 OK -->
+<!-- Date: Mon, 22 Aug 2022 10:46:15 GMT -->
+<!-- Content-Type: text/html;charset=utf-8 -->
+<!-- Transfer-Encoding: chunked -->
+<!-- Server: Jetty(9.4.44.v20210927) -->
+<!-- Request duration: 0.013083s -->
+#+END_SRC
+
+** not found route
+#+BEGIN_SRC restclient
+GET http://localhost:3000/not-found
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC html
+<div><h1>The page is not found</h1></div>
+<!-- GET http://localhost:3000/not-found -->
+<!-- HTTP/1.1 404 Not Found -->
+<!-- Date: Mon, 22 Aug 2022 10:40:53 GMT -->
+<!-- Content-Type: text/html;charset=utf-8 -->
+<!-- Transfer-Encoding: chunked -->
+<!-- Server: Jetty(9.4.44.v20210927) -->
+<!-- Request duration: 0.011025s -->
+#+END_SRC
+
+** users routes
+*** register users
+#+BEGIN_SRC  restclient
+POST http://localhost:3000/regester
+Content-Type: application/json
+{
+      "username": "blaid",
+      "email": "blaid@nis.org",
+      "password": "thepassword"
+}
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC html
+<div><h1>The page is not found</h1></div>
+<!-- POST http://localhost:3000/regester -->
+<!-- HTTP/1.1 404 Not Found -->
+<!-- Date: Tue, 23 Aug 2022 11:14:51 GMT -->
+<!-- Content-Type: text/html;charset=utf-8 -->
+<!-- Transfer-Encoding: chunked -->
+<!-- Server: Jetty(9.4.44.v20210927) -->
+<!-- Request duration: 0.007704s -->
+#+END_SRC
+
+*** get users
+#+BEGIN_SRC restclient
+GET http://localhost:3000/users
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC html
+{:id "2768d8b6-d338-4764-aaef-85239c0b43df", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$fd0f667056c89477bc300a47cde28234$12$7c740443e699401596d78161739ad0d6288f8f3a5fdaf7c3", :createdat #inst "2022-08-22T07:23:01.000000000-00:00", :updatedat #inst "2022-08-22T07:23:01.000000000-00:00"}{:id "53ebb950-5045-4eb0-914a-73d9735f125c", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$780019b28eab1496a7f40a69d7c80b9f$12$288dddb9fbf48c03f883c0ad34473a90e1e249307920799e", :createdat #inst "2022-08-22T07:12:53.000000000-00:00", :updatedat #inst "2022-08-22T07:12:53.000000000-00:00"}{:id "5539024e-b0e9-4f51-9a91-6319894915ee", :username "username", :email "email", :password "hashed-password", :createdat #inst "2022-08-22T06:55:26.000000000-00:00", :updatedat #inst "2022-08-22T06:55:26.000000000-00:00"}{:id "7fe6d07c-4821-4907-8def-8f176832f358", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$73dd3321eb7ed0f3fa8ceee1e0094a8f$12$e446690e14b1bc33c532226a6c70fb40d67f2e1ddbc2c2a9", :createdat #inst "2022-08-23T08:06:59.000000000-00:00", :updatedat #inst "2022-08-23T08:06:59.000000000-00:00"}{:id "9ac311ad-b2b5-4822-a24c-294c42d44fef", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$b99997ef9e8c39b915801466c51fb331$12$0642081fae053d39159c736b9063acd53d6b294183dbfa62", :createdat #inst "2022-08-22T07:06:24.000000000-00:00", :updatedat #inst "2022-08-22T07:06:24.000000000-00:00"}{:id "a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$55a22a89a700ba4c4e141584ff583177$12$4bb47c6945cea937cdcd40ceef59670b5c065a7b5ef157df", :createdat #inst "2022-08-22T07:22:00.000000000-00:00", :updatedat #inst "2022-08-22T07:22:00.000000000-00:00"}{:id "ad69e5ba-40ab-40b5-b104-621d33cf8333", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$29059e02f60c468baefcfc510571cc4e$12$788bff3c49b41a2f58a9576bfae13bcf5ab009352cda66ec", :createdat #inst "2022-08-22T07:20:29.000000000-00:00", :updatedat #inst "2022-08-22T07:20:29.000000000-00:00"}{:id "b3eb4e0c-72b3-45d5-8999-ef74bf211e40", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$05227b78beb67e34f82bb5ff46c6e330$12$6d423ce1af5d62fc555a7bc6d86b446517d22bb623154ab6", :createdat #inst "2022-08-22T07:23:48.000000000-00:00", :updatedat #inst "2022-08-22T07:23:48.000000000-00:00"}{:id "beb68969-3dd4-4efb-99df-23e5e6bf2004", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$dd32a3ba2dd8e3cddf828bb7b5a007ee$12$688b01f308c35ad7949ecc637773380644e0dd781d69f734", :createdat #inst "2022-08-22T07:08:04.000000000-00:00", :updatedat #inst "2022-08-22T07:08:04.000000000-00:00"}{:id "c44bf64f-e9b5-4b49-a178-597355910f37", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$acbb7518d2db88b88125141400f9aa61$12$07e4b9ec79cd3fa8279544507048145afeb0dcd5f120017f", :createdat #inst "2022-08-22T07:22:14.000000000-00:00", :updatedat #inst "2022-08-22T07:22:14.000000000-00:00"}{:id "d02cc680-b48c-4d51-8db3-8a0d21b82d70", :username "Kylo", :email "kylo@email.com", :password "bcrypt+sha512$e8e8aacac29acd77f526103c3d12bac2$12$0724a04d29804179e51f4c6f2166f6405db340e49cd47048", :createdat #inst "2022-08-22T06:49:44.000000000-00:00", :updatedat #inst "2022-08-22T06:49:44.000000000-00:00"}{:id "d12b8d2c-0650-4afa-a6e8-9de6e3434189", :username "billo", :email "killo@email.com", :password "bcrypt+sha512$9e22ebb2256b17a25738b43729cdf5a5$12$d3cb0d07bdac4eb92b5cac869d5bf439f65135826bbd025f", :createdat #inst "2022-08-22T07:24:29.000000000-00:00", :updatedat #inst "2022-08-22T07:24:29.000000000-00:00"}{:id "f146654f-67a5-4e10-927a-ca8a0a9343ed", :username "Ronnie", :email "ronnie@email.com", :password "bcrypt+sha512$6b96cebd5abc63006e742b12a75157aa$12$9f140832f7ba2c9630e159e180d8bb49b857a81604c02612", :createdat #inst "2022-08-22T06:30:55.000000000-00:00", :updatedat #inst "2022-08-22T06:30:55.000000000-00:00"}
+<!-- GET http://localhost:3000/users -->
+<!-- HTTP/1.1 200 OK -->
+<!-- Date: Tue, 23 Aug 2022 11:12:17 GMT -->
+<!-- Content-Type: text/html;charset=utf-8 -->
+<!-- Transfer-Encoding: chunked -->
+<!-- Server: Jetty(9.4.44.v20210927) -->
+<!-- Request duration: 2.054870s -->
+#+END_SRC
+
+*** get user
+#+BEGIN_SRC restclient
+GET http://localhost:3000/users/ron
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC html
+<h1>Hello from ron</h1>
+<!-- GET http://localhost:3000/users/ron -->
+<!-- HTTP/1.1 200 OK -->
+<!-- Date: Tue, 23 Aug 2022 11:11:58 GMT -->
+<!-- Content-Type: text/html;charset=utf-8 -->
+<!-- Transfer-Encoding: chunked -->
+<!-- Server: Jetty(9.4.44.v20210927) -->
+<!-- Request duration: 0.008516s -->
+#+END_SRC
