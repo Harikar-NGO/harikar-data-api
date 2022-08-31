@@ -1,31 +1,13 @@
 (ns hda.db
-  (:require
-   [clojure.java.jdbc :as j]
-   [honey.sql :as sql]
-   [honey.sql.helpers :refer
-    [select select-distinct from join
-     left-join right-join where for group-by
-     having union order-by limit offset
-     values columns update insert-into set
-     composite delete delete-from truncate]
-    :as h]
-   [hda.env :refer [env]]
-   [buddy.hashers :as hashers]))
-
-;; https://search.maven.org/artifact/mysql/mysql-connector-java/8.0.30/jar
-
-(defn uuid
-  []
-  (.toString (java.util.UUID/randomUUID)))
-
-(defn encrypt-password
-  [password]
-  (hashers/derive password
-                  {:alg :bcrypt+sha512}))
-
-(defn verify-password
-  [password hashed-password]
-  (hashers/verify password hashed-password))
+  (:gen-class)
+  (:require [next.jdbc :as j]
+            [next.jdbc.result-set :as rs]
+            [honey.sql :as sql]
+            [honey.sql.helpers :as h]
+            [hda.env :refer [env]]
+            [hda.utils :refer
+             [uuid encrypt-password
+              verify-password]]))
 
 (def mysql-db
   {:host (env :HOST),
@@ -34,96 +16,139 @@
    :user (env :USER),
    :password (env :PASSWORD)})
 
-(defn query [q] (j/query mysql-db q))
-
-(defn insert!
+(defn db-execute!
   [q]
-  (j/db-do-prepared-return-keys mysql-db q))
+  (j/execute! mysql-db
+              q
+              {:return-keys true,
+               :builder-fn
+               rs/as-unqualified-maps}))
 
-(defn delete! [q] (j/execute! mysql-db q))
+(defn db-execute-one!
+  [q]
+  (j/execute-one! mysql-db
+                  q
+                  {:return-keys true,
+                   :builder-fn
+                   rs/as-unqualified-maps}))
 
-(defn create-user
-  [{:keys [username email password]}]
+(defn create-user!
+  [{:keys [username email phone-number password]}]
   (let [hashed-password (encrypt-password
-                         password)
-        created-user
-        (-> (h/insert-into :users)
-            (h/values
-             [{:id (uuid),
-               :username username,
-               :email email,
-               :password hashed-password,
-               :createdAt :now,
-               :updatedAt :now}])
-            (sql/format)
-            (insert!)
-            (first))
-        sanatized-user (dissoc created-user
-                               :password)]
-    sanatized-user))
+                         password)]
+    (-> (h/insert-into :users)
+        (h/values [{:id (uuid),
+                    :username username,
+                    :email email,
+                    :phone_number phone-number,
+                    :password hashed-password,
+                    :createdAt :now,
+                    :updatedAt :now}])
+        sql/format
+        db-execute-one!)))
+
+(defn add-role!
+  [{:keys [user-id role]}]
+  (let [role-id (-> (h/select :id)
+                    (h/from :roles)
+                    (h/where [:= :role role])
+                    sql/format
+                    db-execute-one!
+                    :id)]
+    (-> (h/insert-into :user_in_roles)
+        (h/values [{:id (uuid),
+                    :user_id user-id,
+                    :role_id role-id}])
+        sql/format
+        db-execute-one!)))
 
 (defn get-all-users
   []
-  (query (-> (h/select :*)
-             (h/from :users)
-             (sql/format))))
+  (-> (h/select :id :username :email)
+      (h/from :users)
+      (sql/format)
+      (db-execute!)))
 
-(defn delete-user-by-id!
+(defn get-user-roles-ids
   [user-id]
-  (delete! (-> (h/delete-from :users)
-               (h/where [:= :id user-id])
-               (sql/format))))
+  (-> (h/select :role_id)
+      (h/from :user_in_roles)
+      (h/where [:= :user_id user-id])
+      sql/format
+      db-execute!
+      (->> (map #(:role_id %)))))
 
-(defn verify-user-password
-  [password user-id]
-  (let [hashed-password
-        (get
-         (first
-          (query
-           (-> (h/select :password :email)
-               (h/from :users)
-               (h/where [:= :id user-id])
-               (sql/format))))
-         :password)]
-    (verify-password password
-                     hashed-password)))
+(defn get-role-name
+  [role-id]
+  (-> (h/select :role)
+      (h/from :roles)
+      (h/where [:= :id role-id])
+      sql/format
+      db-execute-one!
+      :role))
+
+(defn get-user-roles
+  [user-id]
+  (let [roles-ids (get-user-roles-ids user-id)
+        role-names (map #(get-role-name %)
+                        roles-ids)]
+    (vec role-names)))
+
+(defn get-user-by-credentials
+  [{:keys [email password]}]
+  (let [user (-> (h/select :id
+                           :username :email
+                           :phone_number
+                           :password)
+                 (h/from :users)
+                 (h/where := :email email)
+                 sql/format
+                 db-execute-one!)
+        user-roles (get-user-roles (:id user))
+        user-and-roles
+        (assoc user :roles user-roles)
+        sanitized-user (dissoc user-and-roles
+                               :password)]
+    (if (and user
+             (:valid (verify-password password
+                                      (:password
+                                       user))))
+      sanitized-user
+      nil)))
 
 (comment
-  (j/db-do-commands
+  (get-all-users)
+  (get-user-by-credentials
+   {:email "mane@email.com", :password "passdo"})
+  (add-role!
+   {:user-id
+    "7547faa0-a551-4392-a3dc-04317cb587e9",
+    :role "editor"})
+  (get-user-roles
+   "7547faa0-a551-4392-a3dc-04317cb587e9")
+  (-> (h/select :*)
+      (h/from :user_in_roles)
+      sql/format
+      db-execute!)
+  (j/execute!
    mysql-db
-   (j/create-table-ddl
-    :users
-    [[:id "varchar(36)" :primary :key]
-     [:username "varchar(50)"]
-     [:email "varchar(120)"]
-     [:password "varchar(200)"]
-     [:createdAt "timestamp"]
-     [:updatedAt "timestamp"]]))
-  (j/db-do-commands mysql-db
-                    (j/drop-table-ddl
-                     :users))
-  (create-user {:username "ron",
-                :email "ron@email.com",
-                :password "password"})
-  (delete-user-by-id!
-   "3ff45457-4391-4aa0-ba1a-32b03d2b8576")
-  (verify-user-password
-   "password"
-   "99469db7-ece6-42f8-b8ec-e28a5c0f311e")
-  (verify-password
-   "password"
-   "pbkdf2+sha256$282b785dae29b08f2dfb7776$100000$ab0ac8da185ba3af87830b332a1ef7734867187175afffc192bd6e3c69710350")
-  (query (-> (h/select :*)
-             (h/from :users)
-             (sql/format)))
-  (get
-   (first
-    (query
-     (->
-       (h/select :password)
-       (h/from :users)
-       (h/where
-        [:= :id
-         "f146654f-67a5-4e10-927a-ca8a0a9343ed"])
-       (sql/format))))
-   :password))
+   ["create table users (id varchar(36) primary key,
+               username varchar(50),
+               email varchar(120),
+               phone_number varchar(20),
+               password varchar(200),
+               createdAt timestamp,
+               updatedAt timestamp)"])
+  (j/execute!
+   mysql-db
+   ["create table user_in_roles (id varchar(36) primary key,
+               user_id varchar(36),
+               role_id varchar(36))"])
+  (-> (h/drop-table :users)
+      sql/format
+      db-execute-one!)
+  (create-user!
+   {:username "mane",
+    :email "mane@email.com",
+    :phone-number "+964-000-000-0000",
+    :password "passdo"}))

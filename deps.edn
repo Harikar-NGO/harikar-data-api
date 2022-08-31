@@ -1,24 +1,18 @@
-{:aliases {:server {:main-opts
-                    ["-m" "hda.core"]}},
+{:aliases {:server {:main-opts ["-m"
+                                "hda.core"]}},
  :deps
  {buddy/buddy-auth {:mvn/version "3.0.323"},
-  buddy/buddy-hashers {:mvn/version
-                       "1.8.158"},
-  cheshire/cheshire {:mvn/version "5.11.0"},
-  com.github.seancorfield/honeysql
-  {:mvn/version "2.3.911"},
-  compojure/compojure {:mvn/version "1.7.0"},
+  buddy/buddy-hashers {:mvn/version "1.8.158"},
+  com.github.seancorfield/honeysql {:mvn/version
+                                    "2.3.911"},
+  com.github.seancorfield/next.jdbc {:mvn/version
+                                     "1.2.796"},
   hiccup/hiccup {:mvn/version "1.0.5"},
-  http-kit/http-kit {:mvn/version
-                     "2.7.0-alpha1"},
-  javax.servlet/servlet-api {:mvn/version
-                             "2.5"},
+  http-kit/http-kit {:mvn/version "2.7.0-alpha1"},
   metosin/muuntaja {:mvn/version "0.6.8"},
+  metosin/reitit {:mvn/version "0.5.18"},
   mysql/mysql-connector-java {:mvn/version
                               "8.0.30"},
-  org.clojure/clojure {:mvn/version
-                       "1.10.0"},
-  org.clojure/java.jdbc {:mvn/version
-                         "0.7.12"},
+  org.clojure/clojure {:mvn/version "1.10.0"},
   ring/ring {:mvn/version "1.9.0"}},
  :path ["src"]}

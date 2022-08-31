@@ -1,18 +1,21 @@
 (ns hda.routes
-  (:require [compojure.core :refer
-             [GET POST defroutes context]]
-            [compojure.route :as
-             compojure-route]
-            [hda.handlers :as handle]))
+  (:require [hda.handlers :as handle]
+            [schema.core :as s]))
 
-(defroutes
- app
- (GET "/" [] handle/index)
- (context
-  "/users"
-  []
-  (GET "/" [] handle/users)
-  (GET "/:id" [id] (handle/user id))
-  (POST "/register" [] handle/register))
- (compojure-route/not-found
-  handle/not-found))
+(def index-route
+  ["/" {:name ::index, :get handle/index}])
+
+(def users-routes
+  [["/"
+    {:name ::users, :get {:handler handle/users}}]
+   ["/register"
+    {:name ::register,
+     :post {:parameters {:body {:username s/Str,
+                                :password s/Str,
+                                :email s/Str}},
+            :handler handle/register}}]
+   ["/login"
+    {:name ::user,
+     :get {:parameters {:body {:email s/Str,
+                               :password s/Str}}},
+     :handler handle/login}]])
