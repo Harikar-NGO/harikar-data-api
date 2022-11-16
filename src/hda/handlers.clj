@@ -2,7 +2,8 @@
   (:require [hiccup.core :refer [html]]
             [hda.db :refer
              [create-user! get-all-users
-              get-user-by-credentials]]))
+              get-user-by-credentials]]
+            [hda.auth :refer [create-token]]))
 
 (defn response
   [status body & {:as headers}]
@@ -41,4 +42,6 @@
       (response unauthorized
                 {:error
                  "wrong email or password"})
-      (response ok {:user user}))))
+      (response ok
+                {:user user,
+                 :token (create-token user)}))))
