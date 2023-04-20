@@ -13,8 +13,8 @@ GET http://localhost:3000/api
 // HTTP/1.1 200 OK
 // content-length: 32
 // Server: http-kit
-// Date: Wed, 24 Aug 2022 12:28:09 GMT
-// Request duration: 0.088463s
+// Date: Mon, 02 Jan 2023 10:47:44 GMT
+// Request duration: 0.145028s
 #+END_SRC
 
 ** not found route
@@ -29,167 +29,91 @@ GET http://localhost:3000/api/not-found
 // HTTP/1.1 404 Not Found
 // content-length: 26
 // Server: http-kit
-// Date: Wed, 24 Aug 2022 12:28:16 GMT
-// Request duration: 0.002242s
+// Date: Mon, 02 Jan 2023 10:47:48 GMT
+// Request duration: 0.008785s
 #+END_SRC
 
 ** users routes
 *** register users
 #+BEGIN_SRC  restclient
-POST http://localhost:3000/api/register
+POST http://localhost:3000/api/users/register
 Content-Type: application/json
 {
-      "username": "blaid",
-      "email": "blaid@nis.org",
-      "password": "thepassword"
+      "username": "Ronnie",
+      "email": "ronnie@harikar.org",
+      "password": "5GR693NK"
 }
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "username": null
+  "success": "user Ronnie was created succesfully"
 }
-// POST http://localhost:3000/api/register
-// HTTP/1.1 201 Created
+// POST http://localhost:3000/api/users/register
+// HTTP/1.1 200 OK
 // Content-Type: application/json; charset=utf-8
-// content-length: 17
+// content-length: 49
 // Server: http-kit
-// Date: Thu, 25 Aug 2022 06:02:10 GMT
-// Request duration: 1.618357s
+// Date: Sat, 31 Dec 2022 09:22:57 GMT
+// Request duration: 0.569805s
 #+END_SRC
+
+
+*** login users
+#+BEGIN_SRC  restclient
+POST http://localhost:3000/api/users/login
+Content-Type: application/json
+{
+      "email": "ronnie@harikar.org",
+      "password": "5GR693NK"
+}
+#+END_SRC
+
+#+RESULTS:
+#+BEGIN_SRC js
+{
+  "user": {
+    "id": "98cf888f-9498-40fd-b8b8-0c8be9b6c0fa",
+    "username": "Ronnie",
+    "email": "ronnie@harikar.org",
+    "phone_number": null,
+    "roles": [
+      "admin"
+    ]
+  },
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijk4Y2Y4ODhmLTk0OTgtNDBmZC1iOGI4LTBjOGJlOWI2YzBmYSIsInVzZXJuYW1lIjoiUm9ubmllIiwiZW1haWwiOiJyb25uaWVAaGFyaWthci5vcmciLCJwaG9uZV9udW1iZXIiOm51bGwsInJvbGVzIjpbImFkbWluIl19.oh7VS5A0cF_pK0_uBTN20QSSK6VVoxKcv9dYbEvUohw"
+}
+// POST http://localhost:3000/api/users/login
+// HTTP/1.1 200 OK
+// Content-Type: application/json; charset=utf-8
+// content-length: 393
+// Server: http-kit
+// Date: Mon, 02 Jan 2023 10:47:59 GMT
+// Request duration: 0.676003s
+#+END_SRC
+
 
 *** get users
 #+BEGIN_SRC restclient
 GET http://localhost:3000/api/users
+Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjUxZjZhYmQwLTc5NDMtNGMwOS04NTNkLTE5NjZjMDRkMGY0ZSIsInVzZXJuYW1lIjoiUm9uIiwiZW1haWwiOiJyb25AaGFyaWthci5vcmciLCJwaG9uZV9udW1iZXIiOm51bGwsInJvbGVzIjpbXX0.EeLAXrcq6qczMIxrWXseTH2V01Hb7acRUGU_eJSjtaM"
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "users": [
-    {
-      "id": "151538c1-7556-4422-bdf6-7069c78365b5",
-      "username": "ron",
-      "email": "ron@email.com",
-      "password": "bcrypt+sha512$50eeb509c3cec569d94f15f6dd5cb0f9$12$1c48aa2f5ffbc74a9ae27833352f360c6a6b6a6fc2146e82",
-      "createdat": "2022-08-23T08:14:03Z",
-      "updatedat": "2022-08-23T08:14:03Z"
-    },
-    {
-      "id": "2768d8b6-d338-4764-aaef-85239c0b43df",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$fd0f667056c89477bc300a47cde28234$12$7c740443e699401596d78161739ad0d6288f8f3a5fdaf7c3",
-      "createdat": "2022-08-22T07:23:01Z",
-      "updatedat": "2022-08-22T07:23:01Z"
-    },
-    {
-      "id": "53ebb950-5045-4eb0-914a-73d9735f125c",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$780019b28eab1496a7f40a69d7c80b9f$12$288dddb9fbf48c03f883c0ad34473a90e1e249307920799e",
-      "createdat": "2022-08-22T07:12:53Z",
-      "updatedat": "2022-08-22T07:12:53Z"
-    },
-    {
-      "id": "5539024e-b0e9-4f51-9a91-6319894915ee",
-      "username": "username",
-      "email": "email",
-      "password": "hashed-password",
-      "createdat": "2022-08-22T06:55:26Z",
-      "updatedat": "2022-08-22T06:55:26Z"
-    },
-    {
-      "id": "7fe6d07c-4821-4907-8def-8f176832f358",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$73dd3321eb7ed0f3fa8ceee1e0094a8f$12$e446690e14b1bc33c532226a6c70fb40d67f2e1ddbc2c2a9",
-      "createdat": "2022-08-23T08:06:59Z",
-      "updatedat": "2022-08-23T08:06:59Z"
-    },
-    {
-      "id": "9ac311ad-b2b5-4822-a24c-294c42d44fef",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$b99997ef9e8c39b915801466c51fb331$12$0642081fae053d39159c736b9063acd53d6b294183dbfa62",
-      "createdat": "2022-08-22T07:06:24Z",
-      "updatedat": "2022-08-22T07:06:24Z"
-    },
-    {
-      "id": "a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$55a22a89a700ba4c4e141584ff583177$12$4bb47c6945cea937cdcd40ceef59670b5c065a7b5ef157df",
-      "createdat": "2022-08-22T07:22:00Z",
-      "updatedat": "2022-08-22T07:22:00Z"
-    },
-    {
-      "id": "ad69e5ba-40ab-40b5-b104-621d33cf8333",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$29059e02f60c468baefcfc510571cc4e$12$788bff3c49b41a2f58a9576bfae13bcf5ab009352cda66ec",
-      "createdat": "2022-08-22T07:20:29Z",
-      "updatedat": "2022-08-22T07:20:29Z"
-    },
-    {
-      "id": "b3eb4e0c-72b3-45d5-8999-ef74bf211e40",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$05227b78beb67e34f82bb5ff46c6e330$12$6d423ce1af5d62fc555a7bc6d86b446517d22bb623154ab6",
-      "createdat": "2022-08-22T07:23:48Z",
-      "updatedat": "2022-08-22T07:23:48Z"
-    },
-    {
-      "id": "beb68969-3dd4-4efb-99df-23e5e6bf2004",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$dd32a3ba2dd8e3cddf828bb7b5a007ee$12$688b01f308c35ad7949ecc637773380644e0dd781d69f734",
-      "createdat": "2022-08-22T07:08:04Z",
-      "updatedat": "2022-08-22T07:08:04Z"
-    },
-    {
-      "id": "c44bf64f-e9b5-4b49-a178-597355910f37",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$acbb7518d2db88b88125141400f9aa61$12$07e4b9ec79cd3fa8279544507048145afeb0dcd5f120017f",
-      "createdat": "2022-08-22T07:22:14Z",
-      "updatedat": "2022-08-22T07:22:14Z"
-    },
-    {
-      "id": "d02cc680-b48c-4d51-8db3-8a0d21b82d70",
-      "username": "Kylo",
-      "email": "kylo@email.com",
-      "password": "bcrypt+sha512$e8e8aacac29acd77f526103c3d12bac2$12$0724a04d29804179e51f4c6f2166f6405db340e49cd47048",
-      "createdat": "2022-08-22T06:49:44Z",
-      "updatedat": "2022-08-22T06:49:44Z"
-    },
-    {
-      "id": "d12b8d2c-0650-4afa-a6e8-9de6e3434189",
-      "username": "billo",
-      "email": "killo@email.com",
-      "password": "bcrypt+sha512$9e22ebb2256b17a25738b43729cdf5a5$12$d3cb0d07bdac4eb92b5cac869d5bf439f65135826bbd025f",
-      "createdat": "2022-08-22T07:24:29Z",
-      "updatedat": "2022-08-22T07:24:29Z"
-    },
-    {
-      "id": "f146654f-67a5-4e10-927a-ca8a0a9343ed",
-      "username": "Ronnie",
-      "email": "ronnie@email.com",
-      "password": "bcrypt+sha512$6b96cebd5abc63006e742b12a75157aa$12$9f140832f7ba2c9630e159e180d8bb49b857a81604c02612",
-      "createdat": "2022-08-22T06:30:55Z",
-      "updatedat": "2022-08-22T06:30:55Z"
-    }
-  ]
+  "error": "Unauthorized"
 }
 // GET http://localhost:3000/api/users
-// HTTP/1.1 200 OK
+// HTTP/1.1 401 Unauthorized
 // Content-Type: application/json; charset=utf-8
-// content-length: 3739
+// content-length: 24
 // Server: http-kit
-// Date: Wed, 24 Aug 2022 12:28:47 GMT
-// Request duration: 0.910889s
+// Date: Mon, 02 Jan 2023 11:10:17 GMT
+// Request duration: 0.005802s
 #+END_SRC
+
 
 *** get user
 #+BEGIN_SRC restclient
@@ -198,18 +122,11 @@ GET http://localhost:3000/api/users/a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8
 
 #+RESULTS:
 #+BEGIN_SRC js
-{
-  "user": {
-    "id": "a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8",
-    "username": "billo",
-    "email": "killo@email.com"
-  }
-}
+[:error "Route not found"]
 // GET http://localhost:3000/api/users/a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8
-// HTTP/1.1 200 OK
-// Content-Type: application/json; charset=utf-8
-// content-length: 99
+// HTTP/1.1 404 Not Found
+// content-length: 26
 // Server: http-kit
-// Date: Thu, 25 Aug 2022 07:09:29 GMT
-// Request duration: 0.838079s
+// Date: Mon, 02 Jan 2023 11:02:06 GMT
+// Request duration: 0.003363s
 #+END_SRC

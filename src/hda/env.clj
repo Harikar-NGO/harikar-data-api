@@ -1,8 +1,7 @@
-(ns hda.env)
+(ns hda.env
+  (:require [clojure.edn :as edn]))
 
-(def envvars
-  (clojure.edn/read-string (slurp
-                            "env.edn")))
+(def envvars (edn/read-string (slurp "env.edn")))
 
 (defn env
   [k]

@@ -11,6 +11,7 @@
 
 (def mysql-db
   {:host (env :HOST),
+   :port (env :PORT),
    :dbtype "mysql",
    :dbname (env :DBNAME),
    :user (env :USER),
@@ -41,11 +42,18 @@
                     :username username,
                     :email email,
                     :phone_number phone-number,
-                    :password hashed-password,
-                    :createdAt :now,
-                    :updatedAt :now}])
+                    :password hashed-password}])
+        ;; :createdAt :now,
+        ;; :updatedAt :now}])
         sql/format
         db-execute-one!)))
+
+(defn create-role!
+  [role]
+  (-> (h/insert-into :roles)
+      (h/values [{:id (uuid), :role role}])
+      sql/format
+      db-execute-one!))
 
 (defn add-role!
   [{:keys [user-id role]}]
@@ -118,14 +126,16 @@
 
 (comment
   (get-all-users)
-  (get-user-by-credentials
-   {:email "mane@email.com", :password "passdo"})
+  (get-user-by-credentials {:email
+                            "ronnie@harikar.org",
+                            :password "5GR693NK"})
+  (create-role! "admin")
   (add-role!
    {:user-id
-    "7547faa0-a551-4392-a3dc-04317cb587e9",
-    :role "editor"})
+    "98cf888f-9498-40fd-b8b8-0c8be9b6c0fa",
+    :role "admin"})
   (get-user-roles
-   "7547faa0-a551-4392-a3dc-04317cb587e9")
+   "98cf888f-9498-40fd-b8b8-0c8be9b6c0fa")
   (-> (h/select :*)
       (h/from :user_in_roles)
       sql/format
@@ -141,14 +151,24 @@
                updatedAt timestamp)"])
   (j/execute!
    mysql-db
+   ["create table roles (id varchar(36) primary key,
+               role varchar(30))"])
+  (j/execute!
+   mysql-db
    ["create table user_in_roles (id varchar(36) primary key,
                user_id varchar(36),
                role_id varchar(36))"])
   (-> (h/drop-table :users)
       sql/format
       db-execute-one!)
+  (-> (h/drop-table :roles)
+      sql/format
+      db-execute-one!)
+  (-> (h/drop-table :user_in_roles)
+      sql/format
+      db-execute-one!)
   (create-user!
-   {:username "mane",
-    :email "mane@email.com",
+   {:username "bee",
+    :email "bee@beekeeper.com",
     :phone-number "+964-000-000-0000",
     :password "passdo"}))
