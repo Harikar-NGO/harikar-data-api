@@ -49,7 +49,7 @@
         db-execute-one!)))
 
 (defn create-role!
-  [role]
+  [{:keys [role]}]
   (-> (h/insert-into :roles)
       (h/values [{:id (uuid), :role role}])
       sql/format
@@ -57,12 +57,12 @@
 
 (defn add-role!
   [{:keys [user-id role]}]
-  (let [role-id (-> (h/select :id)
-                    (h/from :roles)
-                    (h/where [:= :role role])
-                    sql/format
-                    db-execute-one!
-                    :id)]
+  (let [role-object (-> (h/select :id)
+                        (h/from :roles)
+                        (h/where [:= :role role])
+                        sql/format
+                        db-execute-one!)
+        role-id (:id role-object)]
     (-> (h/insert-into :user_in_roles)
         (h/values [{:id (uuid),
                     :user_id user-id,
@@ -74,6 +74,13 @@
   []
   (-> (h/select :id :username :email)
       (h/from :users)
+      (sql/format)
+      (db-execute!)))
+
+(defn get-all-roles
+  []
+  (-> (h/select :id :role)
+      (h/from :roles)
       (sql/format)
       (db-execute!)))
 
@@ -123,6 +130,7 @@
                                        user))))
       sanitized-user
       nil)))
+
 
 (comment
   (get-all-users)

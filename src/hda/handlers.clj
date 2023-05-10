@@ -2,46 +2,74 @@
   (:require [hiccup.core :refer [html]]
             [hda.db :refer
              [create-user! get-all-users
-              get-user-by-credentials]]
+              get-user-by-credentials
+              get-all-roles create-role!
+              add-role!]]
             [hda.auth :refer [create-token]]))
-
-(defn response
-  [status body & {:as headers}]
-  {:status status, :body body, :headers headers})
-
-(def ok (partial response 200))
-(def created (partial response 201))
-(def unauthorized (partial response 401))
 
 (defn index
   [request]
-  (response ok
-            (html [:h1
-                   "This is the index page!"])))
+  {:status 200,
+   :body (html [:h1 "This is the index page!"])})
 
+;; User handlers
 (defn register
   [{:keys [parameters]}]
   (let [data (:body parameters)
         user (create-user! data)]
-    (response
-     created
-     {:success (str
-                "user "
-                (:username data)
-                " was created succesfully")})))
-
-(defn users
-  [request]
-  (response ok {:users (get-all-users)}))
+    {:status 201,
+     :body {:success
+            (str "user "
+                 (:username data)
+                 " was created succesfully")}}))
 
 (defn login
   [{:keys [parameters]}]
   (let [data (:body parameters)
         user (get-user-by-credentials data)]
     (if (nil? user)
-      (response unauthorized
-                {:error
-                 "wrong email or password"})
-      (response ok
-                {:user user,
-                 :token (create-token user)}))))
+      {:status 401,
+       :body {:error "wrong email or password"}}
+      {:status 200,
+       :body {:user user,
+              :token (create-token user)}})))
+
+(defn add-role
+  [{:keys [parameters]}]
+  (let [data (:body parameters)
+        id (:user-id data)
+        role (add-role! data)]
+    {:status 201,
+     :body {:success
+            (str "Role "
+                 (:role data)
+                 " was added to the user")}}))
+
+(defn users
+  [request]
+  {:status 200, :body {:users (get-all-users)}})
+
+(defn user
+  [{:keys [parameters]}]
+  (let [data (:body parameters)
+        user (get-user-by-credentials data)]
+    (if (nil? user)
+      {:status 401,
+       :body {:error "wrong email or password"}}
+      {:status 200, :body {:user user}})))
+
+;; role handlers
+
+(defn roles
+  [request]
+  {:status 200, :body {:roles (get-all-roles)}})
+
+(defn create-role
+  [{:keys [parameters]}]
+  (let [data (:body parameters)
+        role (create-role! data)]
+    {:status 201,
+     :body {:success
+            (str "Role "
+                 (:role data)
+                 " was created succesfully")}}))

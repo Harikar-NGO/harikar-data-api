@@ -18,12 +18,13 @@
      format-response-middleware
      format-negotiate-middleware]]
    [hda.routes :refer
-    [index-route users-routes]]))
+    [index-route users-routes role-routes]]))
 
 (def app
   (ring/ring-handler
    (ring/router
-    [["/api" index-route ["/users" users-routes]]]
+    [["/api" index-route ["/users" users-routes]
+      ["/roles" role-routes]]]
     {:data
      {:coercion reitit.coercion.schema/coercion,
       :muuntaja m/instance,
@@ -49,7 +50,7 @@
 (defn start-server
   []
   (reset! server (run-jetty #'reloadable-server
-                            {:port 3000,
+                            {:port 3001,
                              :join? false})))
 
 (defn stop-server

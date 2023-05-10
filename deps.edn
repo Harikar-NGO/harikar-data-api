@@ -1,7 +1,7 @@
 {:aliases {:server {:main-opts ["-m"
                                 "hda.core"]}},
  :deps
- {buddy/buddy-auth {:mvn/version "3.0.323"},
+ {buddy/buddy-auth {:mvn/version "3.0.1"},
   buddy/buddy-hashers {:mvn/version "1.8.158"},
   com.github.seancorfield/honeysql {:mvn/version
                                     "2.3.911"},
