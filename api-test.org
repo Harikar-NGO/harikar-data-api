@@ -11,10 +11,10 @@ GET http://localhost:3000/api
 <h1>This is the index page!</h1>
 // GET http://localhost:3000/api
 // HTTP/1.1 200 OK
-// content-length: 32
-// Server: http-kit
-// Date: Mon, 02 Jan 2023 10:47:44 GMT
-// Request duration: 0.145028s
+// Date: Thu, 18 May 2023 05:47:42 GMT
+// Transfer-Encoding: chunked
+// Server: Jetty(9.4.31.v20200723)
+// Request duration: 0.151829s
 #+END_SRC
 
 ** not found route
@@ -22,16 +22,7 @@ GET http://localhost:3000/api
 GET http://localhost:3000/api/not-found
 #+END_SRC
 
-#+RESULTS:
-#+BEGIN_SRC js
-[:error "Route not found"]
-// GET http://localhost:3000/api/not-found
-// HTTP/1.1 404 Not Found
-// content-length: 26
-// Server: http-kit
-// Date: Mon, 02 Jan 2023 10:47:48 GMT
-// Request duration: 0.008785s
-#+END_SRC
+
 
 ** users routes
 *** register users
@@ -39,24 +30,25 @@ GET http://localhost:3000/api/not-found
 POST http://localhost:3000/api/users/register
 Content-Type: application/json
 {
-      "username": "Ronnie",
-      "email": "ronnie@harikar.org",
-      "password": "5GR693NK"
+      "username": "Davin",
+      "email": "Davin@harikar.org",
+      "password": "davindav"
 }
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "success": "user Ronnie was created succesfully"
+  "type": "exception",
+  "class": "com.mysql.cj.jdbc.exceptions.CommunicationsException"
 }
 // POST http://localhost:3000/api/users/register
-// HTTP/1.1 200 OK
-// Content-Type: application/json; charset=utf-8
-// content-length: 49
-// Server: http-kit
-// Date: Sat, 31 Dec 2022 09:22:57 GMT
-// Request duration: 0.569805s
+// HTTP/1.1 500 Server Error
+// Date: Thu, 18 May 2023 05:49:17 GMT
+// Content-Type: application/json;charset=utf-8
+// Content-Length: 83
+// Server: Jetty(9.4.31.v20200723)
+// Request duration: 0.506360s
 #+END_SRC
 
 
@@ -65,8 +57,8 @@ Content-Type: application/json
 POST http://localhost:3000/api/users/login
 Content-Type: application/json
 {
-      "email": "ronnie@harikar.org",
-      "password": "5GR693NK"
+      "email": "davin@harikar.org",
+      "password": "davindav"
 }
 #+END_SRC
 
@@ -74,59 +66,56 @@ Content-Type: application/json
 #+BEGIN_SRC js
 {
   "user": {
-    "id": "98cf888f-9498-40fd-b8b8-0c8be9b6c0fa",
-    "username": "Ronnie",
-    "email": "ronnie@harikar.org",
+    "id": "2f08684e-5634-4647-922c-bcbeb61d383a",
+    "username": "Davin",
+    "email": "Davin@harikar.org",
     "phone_number": null,
-    "roles": [
-      "admin"
-    ]
+    "roles": []
   },
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6Ijk4Y2Y4ODhmLTk0OTgtNDBmZC1iOGI4LTBjOGJlOWI2YzBmYSIsInVzZXJuYW1lIjoiUm9ubmllIiwiZW1haWwiOiJyb25uaWVAaGFyaWthci5vcmciLCJwaG9uZV9udW1iZXIiOm51bGwsInJvbGVzIjpbImFkbWluIl19.oh7VS5A0cF_pK0_uBTN20QSSK6VVoxKcv9dYbEvUohw"
+  "token": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjJmMDg2ODRlLTU2MzQtNDY0Ny05MjJjLWJjYmViNjFkMzgzYSIsInVzZXJuYW1lIjoiRGF2aW4iLCJlbWFpbCI6IkRhdmluQGhhcmlrYXIub3JnIiwicGhvbmVfbnVtYmVyIjpudWxsLCJyb2xlcyI6W119.hutZ3QOw_5-xPcb34mZfuDzJfD0UUzOu7JLRZ8GZVfw"
 }
 // POST http://localhost:3000/api/users/login
 // HTTP/1.1 200 OK
-// Content-Type: application/json; charset=utf-8
-// content-length: 393
-// Server: http-kit
-// Date: Mon, 02 Jan 2023 10:47:59 GMT
-// Request duration: 0.676003s
+// Date: Thu, 18 May 2023 05:50:32 GMT
+// Content-Type: application/json;charset=utf-8
+// Set-Cookie: Token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjJmMDg2ODRlLTU2MzQtNDY0Ny05MjJjLWJjYmViNjFkMzgzYSIsInVzZXJuYW1lIjoiRGF2aW4iLCJlbWFpbCI6IkRhdmluQGhhcmlrYXIub3JnIiwicGhvbmVfbnVtYmVyIjpudWxsLCJyb2xlcyI6W119.hutZ3QOw_5-xPcb34mZfuDzJfD0UUzOu7JLRZ8GZVfw;Path=/api
+// Content-Length: 372
+// Server: Jetty(9.4.31.v20200723)
+// Request duration: 0.308211s
 #+END_SRC
 
 
 *** get users
 #+BEGIN_SRC restclient
 GET http://localhost:3000/api/users
-Authorization: "Bearer eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjUxZjZhYmQwLTc5NDMtNGMwOS04NTNkLTE5NjZjMDRkMGY0ZSIsInVzZXJuYW1lIjoiUm9uIiwiZW1haWwiOiJyb25AaGFyaWthci5vcmciLCJwaG9uZV9udW1iZXIiOm51bGwsInJvbGVzIjpbXX0.EeLAXrcq6qczMIxrWXseTH2V01Hb7acRUGU_eJSjtaM"
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "error": "Unauthorized"
+  "users": [
+    {
+      "id": "2f08684e-5634-4647-922c-bcbeb61d383a",
+      "username": "Davin",
+      "email": "Davin@harikar.org"
+    },
+    {
+      "id": "a384fee3-f4a0-456c-aad7-f43b8e02c323",
+      "username": "Jona",
+      "email": "jona@email.org"
+    },
+    {
+      "id": "ffc5556a-d6f2-49f1-afdc-88f6071f011a",
+      "username": "Ron",
+      "email": "ron@harikar.org"
+    }
+  ]
 }
 // GET http://localhost:3000/api/users
-// HTTP/1.1 401 Unauthorized
-// Content-Type: application/json; charset=utf-8
-// content-length: 24
-// Server: http-kit
-// Date: Mon, 02 Jan 2023 11:10:17 GMT
-// Request duration: 0.005802s
-#+END_SRC
-
-
-*** get user
-#+BEGIN_SRC restclient
-GET http://localhost:3000/api/users/a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8
-#+END_SRC
-
-#+RESULTS:
-#+BEGIN_SRC js
-[:error "Route not found"]
-// GET http://localhost:3000/api/users/a0e7c3bb-e17e-401e-96ce-b5dc14bcd9c8
-// HTTP/1.1 404 Not Found
-// content-length: 26
-// Server: http-kit
-// Date: Mon, 02 Jan 2023 11:02:06 GMT
-// Request duration: 0.003363s
+// HTTP/1.1 200 OK
+// Date: Thu, 18 May 2023 05:50:57 GMT
+// Content-Type: application/json;charset=utf-8
+// Content-Length: 282
+// Server: Jetty(9.4.31.v20200723)
+// Request duration: 0.061011s
 #+END_SRC

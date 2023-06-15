@@ -3,6 +3,7 @@
             [schema.core :as s]
             [hda.auth :refer
              [wrap-jwt-authentication
+              wrap-jwt-authorization
               auth-middleware]]))
 
 (def index-route
@@ -12,15 +13,8 @@
   [["/"
     {:name ::users,
      :get {:middleware [wrap-jwt-authentication
-                        auth-middleware],
+                        wrap-jwt-authorization],
            :handler handle/users}}]
-   ["/user"
-    {:name ::user,
-     :post {:middleware [wrap-jwt-authentication
-                         auth-middleware],
-            :parameters {:body {:email s/Str,
-                                :password s/Str}},
-            :handler handle/user}}]
    ["/register"
     {:name ::register,
      :post {:parameters {:body {:username s/Str,
@@ -38,7 +32,12 @@
                          auth-middleware],
             :parameters {:body {:user-id s/Str,
                                 :role s/Str}},
-            :handler handle/add-role}}]])
+            :handler handle/add-role}}]
+   ["/test"
+    {:name ::test,
+     :get {:middleware [wrap-jwt-authentication
+                        auth-middleware],
+           :handler handle/test-route}}]])
 
 (def role-routes
   [["/"

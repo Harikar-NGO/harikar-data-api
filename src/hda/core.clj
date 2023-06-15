@@ -2,6 +2,7 @@
   (:gen-class)
   (:require
    [clojure.pprint]
+   [ring.middleware.cookies :refer [wrap-cookies]]
    [ring.middleware.reload :refer [wrap-reload]]
    [ring.adapter.jetty :refer [run-jetty]]
    [muuntaja.core :as m]
@@ -28,7 +29,8 @@
     {:data
      {:coercion reitit.coercion.schema/coercion,
       :muuntaja m/instance,
-      :middleware [format-negotiate-middleware
+      :middleware [wrap-cookies
+                   format-negotiate-middleware
                    format-response-middleware
                    exception-middleware
                    format-request-middleware
@@ -50,7 +52,7 @@
 (defn start-server
   []
   (reset! server (run-jetty #'reloadable-server
-                            {:port 3001,
+                            {:port 3000,
                              :join? false})))
 
 (defn stop-server

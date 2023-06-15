@@ -1,11 +1,12 @@
 (ns hda.handlers
-  (:require [hiccup.core :refer [html]]
-            [hda.db :refer
-             [create-user! get-all-users
-              get-user-by-credentials
-              get-all-roles create-role!
-              add-role!]]
-            [hda.auth :refer [create-token]]))
+  (:require
+   [clojure.string :as str]
+   [hiccup.core :refer [html]]
+   [hda.db :refer
+    [create-user! get-all-users
+     get-user-by-credentials get-all-roles
+     create-role! add-role!]]
+   [hda.auth :refer [create-token read-token]]))
 
 (defn index
   [request]
@@ -32,7 +33,10 @@
        :body {:error "wrong email or password"}}
       {:status 200,
        :body {:user user,
-              :token (create-token user)}})))
+              :token (create-token user)},
+       :cookies {"Token" {:value (create-token
+                                  user),
+                          :path "/api"}}})))
 
 (defn add-role
   [{:keys [parameters]}]
@@ -49,7 +53,7 @@
   [request]
   {:status 200, :body {:users (get-all-users)}})
 
-(defn user
+(defn test-route
   [{:keys [parameters]}]
   (let [data (:body parameters)
         user (get-user-by-credentials data)]
