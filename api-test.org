@@ -11,10 +11,10 @@ GET http://localhost:3000/api
 <h1>This is the index page!</h1>
 // GET http://localhost:3000/api
 // HTTP/1.1 200 OK
-// Date: Thu, 18 May 2023 05:47:42 GMT
+// Date: Sun, 24 Sep 2023 07:15:28 GMT
 // Transfer-Encoding: chunked
 // Server: Jetty(9.4.31.v20200723)
-// Request duration: 0.151829s
+// Request duration: 0.168636s
 #+END_SRC
 
 ** not found route
@@ -22,33 +22,87 @@ GET http://localhost:3000/api
 GET http://localhost:3000/api/not-found
 #+END_SRC
 
+#+RESULTS:
+#+BEGIN_SRC html
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8"/>
+<title>Error 500 java.lang.IllegalArgumentException: No implementation of method: :write-body-to-stream of protocol: #&apos;ring.core.protocols/StreamableResponseBody found for class: clojure.lang.PersistentArrayMap</title>
+</head>
+<body><h2>HTTP ERROR 500 java.lang.IllegalArgumentException: No implementation of method: :write-body-to-stream of protocol: #&apos;ring.core.protocols/StreamableResponseBody found for class: clojure.lang.PersistentArrayMap</h2>
+<table>
+<tr><th>URI:</th><td>/api/not-found</td></tr>
+<tr><th>STATUS:</th><td>500</td></tr>
+<tr><th>MESSAGE:</th><td>java.lang.IllegalArgumentException: No implementation of method: :write-body-to-stream of protocol: #&apos;ring.core.protocols/StreamableResponseBody found for class: clojure.lang.PersistentArrayMap</td></tr>
+<tr><th>SERVLET:</th><td>-</td></tr>
+<tr><th>CAUSED BY:</th><td>java.lang.IllegalArgumentException: No implementation of method: :write-body-to-stream of protocol: #&apos;ring.core.protocols/StreamableResponseBody found for class: clojure.lang.PersistentArrayMap</td></tr>
+</table>
+<h3>Caused by:</h3><pre>java.lang.IllegalArgumentException: No implementation of method: :write-body-to-stream of protocol: #&apos;ring.core.protocols/StreamableResponseBody found for class: clojure.lang.PersistentArrayMap
+	at clojure.core$_cache_protocol_fn.invokeStatic(core_deftype.clj:583)
+	at clojure.core$_cache_protocol_fn.invoke(core_deftype.clj:575)
+	at ring.core.protocols$eval9082$fn__9083$G__9073__9092.invoke(protocols.clj:8)
+	at ring.util.servlet$update_servlet_response.invokeStatic(servlet.clj:108)
+	at ring.util.servlet$update_servlet_response.invoke(servlet.clj:93)
+	at ring.util.servlet$update_servlet_response.invokeStatic(servlet.clj:97)
+	at ring.util.servlet$update_servlet_response.invoke(servlet.clj:93)
+	at ring.adapter.jetty$proxy_handler$fn__9211.invoke(jetty.clj:28)
+	at ring.adapter.jetty.proxy$org.eclipse.jetty.server.handler.AbstractHandler$ff19274a.handle(Unknown Source)
+	at org.eclipse.jetty.server.handler.HandlerWrapper.handle(HandlerWrapper.java:127)
+	at org.eclipse.jetty.server.Server.handle(Server.java:501)
+	at org.eclipse.jetty.server.HttpChannel.lambda$handle$1(HttpChannel.java:383)
+	at org.eclipse.jetty.server.HttpChannel.dispatch(HttpChannel.java:556)
+	at org.eclipse.jetty.server.HttpChannel.handle(HttpChannel.java:375)
+	at org.eclipse.jetty.server.HttpConnection.onFillable(HttpConnection.java:273)
+	at org.eclipse.jetty.io.AbstractConnection$ReadCallback.succeeded(AbstractConnection.java:311)
+	at org.eclipse.jetty.io.FillInterest.fillable(FillInterest.java:105)
+	at org.eclipse.jetty.io.ChannelEndPoint$1.run(ChannelEndPoint.java:104)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool.runJob(QueuedThreadPool.java:806)
+	at org.eclipse.jetty.util.thread.QueuedThreadPool$Runner.run(QueuedThreadPool.java:938)
+	at java.base/java.lang.Thread.run(Thread.java:833)
+</pre>
+<hr><a href="http://eclipse.org/jetty">Powered by Jetty:// 9.4.31.v20200723</a><hr/>
+
+</body>
+</html>
+
+<!-- GET http://localhost:3000/api/not-found -->
+<!-- HTTP/1.1 500 Server Error -->
+<!-- Cache-Control: must-revalidate,no-cache,no-store -->
+<!-- Content-Type: text/html;charset=iso-8859-1 -->
+<!-- Content-Length: 3075 -->
+<!-- Connection: close -->
+<!-- Server: Jetty(9.4.31.v20200723) -->
+<!-- Request duration: 0.183025s -->
+#+END_SRC
+
 
 
 ** users routes
 *** register users
 #+BEGIN_SRC  restclient
-POST http://localhost:3000/api/users/register
-Content-Type: application/json
-{
-      "username": "Davin",
-      "email": "Davin@harikar.org",
-      "password": "davindav"
-}
+  POST http://localhost:3000/api/users/register
+  Content-Type: application/json
+  {
+        "username": "Davin",
+        "email": "Davin@harikar.org",
+        "password": "davindav",
+        "phone_number": "+964-750-000-00-00",
+        "role_id": "admin"
+  }
 #+END_SRC
 
 #+RESULTS:
 #+BEGIN_SRC js
 {
-  "type": "exception",
-  "class": "com.mysql.cj.jdbc.exceptions.CommunicationsException"
+  "success": "user Davin was created succesfully"
 }
 // POST http://localhost:3000/api/users/register
-// HTTP/1.1 500 Server Error
-// Date: Thu, 18 May 2023 05:49:17 GMT
+// HTTP/1.1 201 Created
+// Date: Sun, 24 Sep 2023 09:57:15 GMT
 // Content-Type: application/json;charset=utf-8
-// Content-Length: 83
+// Content-Length: 48
 // Server: Jetty(9.4.31.v20200723)
-// Request duration: 0.506360s
+// Request duration: 2.552597s
 #+END_SRC
 
 
@@ -66,22 +120,20 @@ Content-Type: application/json
 #+BEGIN_SRC js
 {
   "user": {
-    "id": "2f08684e-5634-4647-922c-bcbeb61d383a",
+    "id": "3daa494a-37fb-4710-90bd-34e2872fd63by",
     "username": "Davin",
     "email": "Davin@harikar.org",
     "phone_number": null,
     "roles": []
-  },
-  "token": "eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjJmMDg2ODRlLTU2MzQtNDY0Ny05MjJjLWJjYmViNjFkMzgzYSIsInVzZXJuYW1lIjoiRGF2aW4iLCJlbWFpbCI6IkRhdmluQGhhcmlrYXIub3JnIiwicGhvbmVfbnVtYmVyIjpudWxsLCJyb2xlcyI6W119.hutZ3QOw_5-xPcb34mZfuDzJfD0UUzOu7JLRZ8GZVfw"
+  }
 }
 // POST http://localhost:3000/api/users/login
 // HTTP/1.1 200 OK
-// Date: Thu, 18 May 2023 05:50:32 GMT
+// Date: Sun, 24 Sep 2023 07:16:09 GMT
 // Content-Type: application/json;charset=utf-8
-// Set-Cookie: Token=eyJhbGciOiJIUzI1NiJ9.eyJpZCI6IjJmMDg2ODRlLTU2MzQtNDY0Ny05MjJjLWJjYmViNjFkMzgzYSIsInVzZXJuYW1lIjoiRGF2aW4iLCJlbWFpbCI6IkRhdmluQGhhcmlrYXIub3JnIiwicGhvbmVfbnVtYmVyIjpudWxsLCJyb2xlcyI6W119.hutZ3QOw_5-xPcb34mZfuDzJfD0UUzOu7JLRZ8GZVfw;Path=/api
-// Content-Length: 372
+// Content-Length: 132
 // Server: Jetty(9.4.31.v20200723)
-// Request duration: 0.308211s
+// Request duration: 1.598765s
 #+END_SRC
 
 
@@ -95,27 +147,22 @@ GET http://localhost:3000/api/users
 {
   "users": [
     {
-      "id": "2f08684e-5634-4647-922c-bcbeb61d383a",
+      "id": "3daa494a-37fb-4710-90bd-34e2872fd63b",
       "username": "Davin",
       "email": "Davin@harikar.org"
     },
     {
-      "id": "a384fee3-f4a0-456c-aad7-f43b8e02c323",
-      "username": "Jona",
-      "email": "jona@email.org"
-    },
-    {
-      "id": "ffc5556a-d6f2-49f1-afdc-88f6071f011a",
-      "username": "Ron",
-      "email": "ron@harikar.org"
+      "id": "7547faa0-a551-4392-a3dc-04317cb587e9",
+      "username": "mane",
+      "email": "mane@email.com"
     }
   ]
 }
 // GET http://localhost:3000/api/users
 // HTTP/1.1 200 OK
-// Date: Thu, 18 May 2023 05:50:57 GMT
+// Date: Sun, 24 Sep 2023 07:16:30 GMT
 // Content-Type: application/json;charset=utf-8
-// Content-Length: 282
+// Content-Length: 193
 // Server: Jetty(9.4.31.v20200723)
-// Request duration: 0.061011s
+// Request duration: 0.701673s
 #+END_SRC

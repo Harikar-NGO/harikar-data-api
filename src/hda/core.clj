@@ -1,35 +1,35 @@
 (ns hda.core
   (:gen-class)
   (:require
-   [clojure.pprint]
-   [ring.middleware.cookies :refer [wrap-cookies]]
-   [ring.middleware.reload :refer [wrap-reload]]
-   [ring.adapter.jetty :refer [run-jetty]]
-   [muuntaja.core :as m]
-   [reitit.coercion.schema]
-   [reitit.ring :as ring]
-   [reitit.ring.coercion :refer
-    [coerce-exceptions-middleware
-     coerce-request-middleware
-     coerce-response-middleware]]
-   [reitit.ring.middleware.exception :refer
-    [exception-middleware]]
-   [reitit.ring.middleware.muuntaja :refer
-    [format-request-middleware
-     format-response-middleware
-     format-negotiate-middleware]]
-   [hda.routes :refer
-    [index-route users-routes role-routes]]))
+    [clojure.pprint]
+    [ring.middleware.reload :refer [wrap-reload]]
+    [ring.middleware.session :refer
+     [wrap-session]]
+    [ring.adapter.jetty :refer [run-jetty]]
+    [muuntaja.core :as m]
+    [reitit.coercion.schema]
+    [reitit.ring :as ring]
+    [reitit.ring.coercion :refer
+     [coerce-exceptions-middleware
+      coerce-request-middleware
+      coerce-response-middleware]]
+    [reitit.ring.middleware.exception :refer
+     [exception-middleware]]
+    [reitit.ring.middleware.muuntaja :refer
+     [format-request-middleware
+      format-response-middleware
+      format-negotiate-middleware]]
+    [hda.routes :refer [index-route api-routes]]
+    [hda.handlers :refer [not-found]]))
 
 (def app
   (ring/ring-handler
    (ring/router
-    [["/api" index-route ["/users" users-routes]
-      ["/roles" role-routes]]]
+    [index-route api-routes]
     {:data
      {:coercion reitit.coercion.schema/coercion,
       :muuntaja m/instance,
-      :middleware [wrap-cookies
+      :middleware [wrap-session
                    format-negotiate-middleware
                    format-response-middleware
                    exception-middleware
@@ -37,13 +37,8 @@
                    coerce-exceptions-middleware
                    coerce-request-middleware
                    coerce-response-middleware]}})
-   (ring/routes
-    (ring/redirect-trailing-slash-handler)
-    (ring/create-default-handler
-     {:not-found
-      (constantly
-       {:status 404,
-        :body {:error "Route not found"}})}))))
+   (ring/create-default-handler {:not-found
+                                 not-found})))
 
 (defonce server (atom nil))
 
