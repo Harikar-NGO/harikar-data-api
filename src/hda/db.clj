@@ -43,17 +43,26 @@
   []
   (-> (h/select :id :role)
       (h/from :roles)
-      (sql/format)
-      (db-execute!)))
+      sql/format
+      db-execute!))
 
 (defn get-role
   [role]
   (-> (h/select :id)
       (h/from :roles)
       (h/where := :role role)
-      (sql/format)
-      (db-execute-one!)
+      sql/format
+      db-execute-one!
       :id))
+
+(defn email-taken?
+  [email]
+  (let [email (-> (h/select :email)
+                  (h/from :users)
+                  (h/where := :email email)
+                  sql/format
+                  db-execute-one!)]
+    (if (seq email) true nil)))
 
 (defn create-user!
   [{:keys [username email password role]}]
@@ -105,19 +114,31 @@
                             :password "davindav"})
   (j/execute!
    mysql-db
-   ["create table users (id varchar(36) primary key,
-               username varchar(50),
-               email varchar(120),
-               phone_number varchar(20),
-               password varchar(200),
-               role_id varchar(36),
-               createdAt timestamp,
-               updatedAt timestamp)"])
+   ["create table users (
+            id varchar(36) primary key,
+            username varchar(50),
+            email varchar(120),
+            phone_number varchar(20),
+            password varchar(200),
+            role_id varchar(36),
+            createdAt timestamp,
+            updatedAt timestamp)"])
   (j/execute!
    mysql-db
-   ["create table roles (id varchar(36) primary key,
-               role varchar(30))"])
+   ["create table roles (
+            id varchar(36) primary key,
+            role varchar(30))"])
+  (j/execute!
+   mysql-db
+   ["create table session_store (
+            session_id VARCHAR(36) primary key NOT NULL,
+            idle_timeout DOUBLE DEFAULT NULL,
+            absolute_timeout DOUBLE DEFAULT NULL,
+            value BLOB)"])
   (-> (h/drop-table :users)
+      sql/format
+      db-execute-one!)
+  (-> (h/drop-table :session_store)
       sql/format
       db-execute-one!)
   (-> (h/drop-table :roles)

@@ -19,26 +19,34 @@
      [format-request-middleware
       format-response-middleware
       format-negotiate-middleware]]
+    [jdbc-ring-session.core :refer [jdbc-store]]
     [hda.routes :refer [index-route api-routes]]
-    [hda.handlers :refer [not-found]]))
+    [hda.handlers :as handle]
+[hda.db :refer [mysql-db]]))
 
 (def app
   (ring/ring-handler
    (ring/router
     [index-route api-routes]
-    {:data
-     {:coercion reitit.coercion.schema/coercion,
-      :muuntaja m/instance,
-      :middleware [wrap-session
-                   format-negotiate-middleware
-                   format-response-middleware
-                   exception-middleware
-                   format-request-middleware
-                   coerce-exceptions-middleware
-                   coerce-request-middleware
-                   coerce-response-middleware]}})
-   (ring/create-default-handler {:not-found
-                                 not-found})))
+    {:data {:coercion
+            reitit.coercion.schema/coercion,
+            :muuntaja m/instance,
+            :middleware
+            [[wrap-session
+              {:cookie-attrs {:secure true,
+                              :max-age 30},
+               :store (jdbc-store mysql-db)}]
+             format-negotiate-middleware
+             format-response-middleware
+             exception-middleware
+             format-request-middleware
+             coerce-exceptions-middleware
+             coerce-request-middleware
+             coerce-response-middleware]}})
+   (ring/routes
+    (ring/redirect-trailing-slash-handler)
+    (ring/create-default-handler
+     {:not-found handle/not-found}))))
 
 (defonce server (atom nil))
 
@@ -63,4 +71,5 @@
 
 (comment
   (start-server)
-  (stop-server))
+  (stop-server)
+  )

@@ -4,7 +4,7 @@
             [hda.db :refer
              [create-user! get-all-users
               get-user-by-credentials create-role!
-              get-all-roles]]))
+              get-all-roles email-taken?]]))
 
 (defn index
   [request]
@@ -18,14 +18,18 @@
 
 ;; User handlers
 (defn register
-  [{:keys [parameters session]}]
-  (let [data (:body parameters)
-        user (create-user! data)]
-    {:status 201,
-     :body {:success
+  [{:keys [parameters]}]
+  (let [data (:body parameters)]
+    (if (email-taken? (:email data))
+      {:status 401,
+       :body {:error "This email is taken"}}
+      (do (create-user! data)
+          {:status 201,
+           :body
+           {:success
             (str "user "
                  (:username data)
-                 " was created succesfully")}}))
+                 " was created succesfully")}}))))
 
 (defn login
   [{:keys [parameters]}]
@@ -34,11 +38,33 @@
     (if (nil? user)
       {:status 401,
        :body {:error "wrong email or password"}}
-      {:status 200, :body {:user user}})))
+      {:status 200,
+       :session (select-keys (into {} user)
+                             [:username :email
+                              :role]),
+       :body {:user user}})))
+
+(defn info
+  [{:keys [session]}]
+  (if (seq session)
+    {:status 200, :body session}
+    {:status 401,
+     :body {:error "You are not signed in"}}))
+
+(defn logout
+  [request]
+  {:status 200, :session nil})
 
 (defn users
-  [request]
-  {:status 200, :body {:users (get-all-users)}})
+  [{:keys [session]}]
+  (if (seq session)
+    (if (= (:role session) "admin")
+      {:status 200,
+       :body {:users (get-all-users)}}
+      {:status 401,
+       :body {:error "You are not an admin"}})
+    {:status 401,
+     :body {:error "Sign in first"}}))
 
 ;; role handlers
 

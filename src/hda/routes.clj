@@ -19,7 +19,12 @@
     {:name ::login,
      :post {:parameters {:body {:email s/Str,
                                 :password s/Str}},
-            :handler handle/login}}]])
+            :handler handle/login}}]
+   ["/info"
+    {:name ::info, :get {:handler handle/info}}]
+   ["/logout"
+    {:name ::logout,
+     :post {:handler handle/logout}}]])
 
 (def role-routes
   ["/roles" {:name ::roles}
